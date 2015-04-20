@@ -1,0 +1,51 @@
+<?php
+/**
+ * @file
+ *
+ * All public methods/hooks to provide a connector to the factorial monitoring service.
+ */
+
+/**
+ * Implementation of hook_menu().
+ */
+function factorial_monitoring_connector_menu() {
+  return array(
+    'admin/monitor-state' => array(
+      'page callback' => 'factorial_monitoring_connector_get_results',
+      'access arguments' => array('access content'),
+      'type' => MENU_CALLBACK,
+    ),
+  );
+}
+
+/**
+ * Get all builtin collectors.
+ */
+function factorial_monitoring_connector_get_builtin_collectors() {
+  return array(
+    'core_version',
+    'update_status'
+  );
+}
+
+
+/**
+ * Implements the page callback. Collect all results and return them as JSON.
+ */
+function factorial_monitoring_connector_get_results() {
+  $result = module_invoke_all('factorial_monitoring_collect_value');
+
+  ajax_deliver_page($result);
+}
+
+
+/**
+ * Implementation of hook_factorial_monitoring_collect_value().
+ */
+function factorial_monitoring_connector_factorial_monitoring_collect_value() {
+  $result = array();
+
+
+
+  return $result;
+}
