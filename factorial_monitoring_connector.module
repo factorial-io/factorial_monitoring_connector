@@ -19,33 +19,63 @@ function factorial_monitoring_connector_menu() {
 }
 
 /**
- * Get all builtin collectors.
+ * Get the client version.
  */
-function factorial_monitoring_connector_get_builtin_collectors() {
-  return array(
-    'core_version',
-    'update_status'
-  );
+function factorial_monitoring_connector_get_client_version() {
+  return '1.0';
 }
+
+
 
 
 /**
  * Implements the page callback. Collect all results and return them as JSON.
  */
 function factorial_monitoring_connector_get_results() {
-  $result = module_invoke_all('factorial_monitoring_collect_value');
+  $results = module_invoke_all('factorial_monitoring_collect_values');
 
-  ajax_deliver_page($result);
+  $return = array(
+    'results' => $results,
+    'version' => factorial_monitoring_connector_get_client_version(),
+  );
+
+  // Disable caching.
+  drupal_page_is_cacheable(FALSE);
+
+  // Create response.
+  $json = json_encode($return);
+  drupal_add_http_header('Content-Type', 'application/json; charset=utf-8');
+  print($json);
+  drupal_exit();
 }
 
 
 /**
- * Implementation of hook_factorial_monitoring_collect_value().
+ * Implementation of hook_factorial_monitoring_collect_values().
  */
-function factorial_monitoring_connector_factorial_monitoring_collect_value() {
+function factorial_monitoring_connector_factorial_monitoring_collect_values() {
   $result = array();
 
+  $base_path = drupal_get_path('module', 'factorial_monitoring_connector') . '/collectors';
+  $dir = scandir($base_path);
 
+  foreach ($dir as $file) {
+    $parts = pathinfo($file);
+    if (($file[0] == '.') || ($parts['extension'] != 'inc')) {
+      continue;
+    }
+
+    require_once $base_path . '/' . $file;
+    $callback = 'factorial_monitoring_connector_collect_' . $parts['filename'];
+    $query = $callback();
+
+    if (!empty($query)) {
+      if (isset($query['value'])) {
+        $query = array($query);
+      }
+      $result += $query;
+    }
+  }
 
   return $result;
 }
