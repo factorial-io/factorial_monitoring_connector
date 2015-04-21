@@ -1,4 +1,12 @@
 <?php
+/**
+ * @file
+ * Collect update status.
+ */
+
+/**
+ * Collect update status.
+ */
 function factorial_monitoring_connector_collect_update_status() {
 
   if ($available = update_get_available(FALSE)) {
@@ -20,7 +28,7 @@ function factorial_monitoring_connector_collect_update_status() {
         'type' => 'warning',
       ),
       UPDATE_NOT_CURRENT => array(
-        'value' => 'Update are available',
+        'value' => 'Updates are available',
         'type' => 'status',
       ),
       UPDATE_CURRENT => array(
@@ -38,9 +46,8 @@ function factorial_monitoring_connector_collect_update_status() {
 
     unset($data['drupal']);
 
-
     foreach ($mapping as $status => $result) {
-      foreach($data as $item) {
+      foreach ($data as $item) {
         if ($item['status'] == $status) {
           if (isset($return[$status])) {
             $result = $return[$status];

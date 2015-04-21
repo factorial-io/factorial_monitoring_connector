@@ -1,4 +1,13 @@
 <?php
+/**
+ * @file
+ * Collect core version.
+ */
+
+/**
+ * Collect core version.
+ */
+
 function factorial_monitoring_connector_collect_core_version() {
   return array(
     'group' => 'core',
