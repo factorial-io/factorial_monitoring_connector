@@ -1,9 +1,10 @@
 <?php
 /**
  * @file
- *
  * All public methods/hooks to provide a connector to the factorial monitoring service.
  */
+
+define('FMC_CACHE_LIFETIME', 60);
 
 /**
  * Implementation of hook_menu().
@@ -25,19 +26,41 @@ function factorial_monitoring_connector_get_client_version() {
   return '1.0';
 }
 
+/**
+ * Private implementation to get results.
+ */
+function _factorial_monitoring_connector_get_results() {
 
+  $cache_key = 'factorial_monitoring_connector_results';
+  if ((FMC_CACHE_LIFETIME > 0) && ($data = cache_get($cache_key))) {
+    if ($data->expire >= time()) {
+      return $data->data;
+    }
+  }
+
+  $results = module_invoke_all('factorial_monitoring_collect_values');
+
+  drupal_alter('factorial_monitoring_collect_values', $results);
+
+  $return = array(
+    'results' => $results,
+    'version' => factorial_monitoring_connector_get_client_version(),
+    'ts' => time(),
+  );
+
+  if (FMC_CACHE_LIFETIME > 0) {
+    cache_set($cache_key, $return, 'cache', time() + FMC_CACHE_LIFETIME);
+  }
+
+  return $return;
+}
 
 
 /**
  * Implements the page callback. Collect all results and return them as JSON.
  */
 function factorial_monitoring_connector_get_results() {
-  $results = module_invoke_all('factorial_monitoring_collect_values');
-
-  $return = array(
-    'results' => $results,
-    'version' => factorial_monitoring_connector_get_client_version(),
-  );
+  $return = _factorial_monitoring_connector_get_results();
 
   // Disable caching.
   drupal_page_is_cacheable(FALSE);
@@ -45,7 +68,7 @@ function factorial_monitoring_connector_get_results() {
   // Create response.
   $json = json_encode($return);
   drupal_add_http_header('Content-Type', 'application/json; charset=utf-8');
-  print($json);
+  print $json;
   drupal_exit();
 }
 
