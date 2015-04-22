@@ -23,7 +23,7 @@ function factorial_monitoring_connector_menu() {
  * Get the client version.
  */
 function factorial_monitoring_connector_get_client_version() {
-  return '1.0';
+  return '1.0.0';
 }
 
 /**
@@ -96,7 +96,7 @@ function factorial_monitoring_connector_factorial_monitoring_collect_values() {
       if (isset($query['value'])) {
         $query = array($query);
       }
-      $result += $query;
+      $result = array_merge($result, $query);
     }
   }
 
