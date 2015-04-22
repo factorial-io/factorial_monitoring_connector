@@ -4,7 +4,7 @@
  * All public methods/hooks to provide a connector to the factorial monitoring service.
  */
 
-define('FMC_CACHE_LIFETIME', 60);
+define('FMC_CACHE_LIFETIME', -1);
 
 /**
  * Implementation of hook_menu().
