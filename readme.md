@@ -6,7 +6,7 @@ the factorial_monitoring_connector is a small module to collect various informat
 
 add this repository as a submodule via 
 
-    git submodule add ssh://git@source.factorial.io:2222/shuber/factorial-monitor-drupal-connector.git public/sites/all/modules/custom/factorial_monitoring_connector
+    git submodule add https://github.com/factorial-io/factorial_monitoring_connector.git sites/all/modules/custom/factorial_monitoring_connector
 
 Enable the module as usual.
 
