@@ -11,7 +11,7 @@
  */
 function factorial_monitoring_connector_collect_queue() {
 
-  $result = db_query('select distinct(name), count(name) as count from {queue}');
+  $result = db_query('SELECT count(name) AS count, name FROM {queue} GROUP BY name');
 
   $return = array();
   while($row = $result->fetchObject()) {
