@@ -91,14 +91,14 @@ function factorial_monitoring_connector_encrypt($data) {
   here i am doing 256-bit AES encryption
   choose a strong key
   */
-  $key256 = variable_get('factorial_monitor_connector_key', '12345678901234561234567890123456');
+  $key256 = variable_get('factorial_monitoring_connector_key', '12345678901234561234567890123456');
 
   /*
   for 128 bit Rijndael encryption, initialization vector (iv) size should be 16 bytes
   for 256 bit Rijndael encryption, initialization vector (iv) size should be 32 bytes
   here I have chosen 128 bit Rijndael encyrption, so $iv size is 16 bytes
   */
-  $iv = variable_get('factorial_monitor_connector_iv', '1234567890123456');
+  $iv = variable_get('factorial_monitoring_connector_iv', '1234567890123456');
   mcrypt_generic_init($cipher, $key256, $iv);
   // PHP pads with NULL bytes if $plainText is not a multiple of the block size
   $cipherText256 = mcrypt_generic($cipher, $to_encrypt);
