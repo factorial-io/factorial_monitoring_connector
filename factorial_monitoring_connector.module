@@ -30,7 +30,7 @@ function factorial_monitoring_connector_access_callback() {
  * Get the client version.
  */
 function factorial_monitoring_connector_get_client_version() {
-  return '1.0.0';
+  return '1.1.0';
 }
 
 /**
@@ -72,6 +72,8 @@ function factorial_monitoring_connector_get_results() {
   // Disable caching.
   drupal_page_is_cacheable(FALSE);
 
+  $return = factorial_monitoring_connector_encrypt($return);
+
   // Create response.
   $json = json_encode($return);
   drupal_add_http_header('Content-Type', 'application/json; charset=utf-8');
@@ -79,6 +81,38 @@ function factorial_monitoring_connector_get_results() {
   drupal_exit();
 }
 
+function factorial_monitoring_connector_encrypt($data) {
+  $to_encrypt = json_encode($data['results']);
+  $cipher = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_CBC, '');
+
+  /*
+  for 256 bit AES encryption key size should be of 32 bytes (256 bits)
+  for 128 bit AES encryption key size should be of 16 bytes (128 bits)
+  here i am doing 256-bit AES encryption
+  choose a strong key
+  */
+  $key256 = variable_get('factorial_monitor_connector_key', '12345678901234561234567890123456');
+
+  /*
+  for 128 bit Rijndael encryption, initialization vector (iv) size should be 16 bytes
+  for 256 bit Rijndael encryption, initialization vector (iv) size should be 32 bytes
+  here I have chosen 128 bit Rijndael encyrption, so $iv size is 16 bytes
+  */
+  $iv = variable_get('factorial_monitor_connector_iv', '1234567890123456');
+  mcrypt_generic_init($cipher, $key256, $iv);
+  // PHP pads with NULL bytes if $plainText is not a multiple of the block size
+  $cipherText256 = mcrypt_generic($cipher, $to_encrypt);
+  mcrypt_generic_deinit($cipher);
+  /*
+  $cipherHexText256 stores encrypted text in hex
+  we will be decrypting data stored in $cipherHexText256 from node js
+  */
+  $cipherHexText256 =bin2hex($cipherText256);
+
+  $data['results'] = $cipherHexText256;
+  $data['encrypted'] = TRUE;
+  return $data;
+}
 
 /**
  * Implementation of hook_factorial_monitoring_collect_values().
