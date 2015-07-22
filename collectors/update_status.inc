@@ -9,6 +9,12 @@
  */
 function factorial_monitoring_connector_collect_update_status() {
 
+  // Not all hosting providers allow the update-module, so exit early, if
+  // necessary.
+  if (!module_exists('update')) {
+    return;
+  }
+
   if ($available = update_get_available(FALSE)) {
     $return = array();
 

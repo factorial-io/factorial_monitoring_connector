@@ -13,10 +13,17 @@ function factorial_monitoring_connector_menu() {
   return array(
     'admin/monitor-state' => array(
       'page callback' => 'factorial_monitoring_connector_get_results',
-      'access arguments' => array('access content'),
+      'access callback' => 'factorial_monitoring_connector_access_callback',
       'type' => MENU_CALLBACK,
     ),
   );
+}
+
+/**
+ * Menu access callback.
+ */
+function factorial_monitoring_connector_access_callback() {
+  return TRUE;
 }
 
 /**
