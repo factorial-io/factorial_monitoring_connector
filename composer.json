@@ -1,0 +1,6 @@
+{
+  "name": "factorial-io/factorial_monitoring_connector",
+  "description": "A small drupal module to collect various system information and provide them as JSON on request",
+  "type": "drupal-module",
+  "license": "GPL-2.0+"
+}
