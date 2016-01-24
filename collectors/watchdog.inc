@@ -43,13 +43,17 @@ function factorial_monitoring_connector_collect_watchdog() {
     ':ts' => $last_timestamp,
     ':severities' => array(WATCHDOG_ALERT, WATCHDOG_ERROR, WATCHDOG_CRITICAL, WATCHDOG_EMERGENCY, WATCHDOG_WARNING)
   ));
-
   foreach($query as $row) {
+    $vars = unserialize($row->variables);
+    if (!is_array($vars)) {
+      $vars = array();
+    }
+
     $result[] = array(
       'key' => 'watchdog-error-' . $row->wid,
       'group' => 'watchdog-errors',
       'name' => 'A critical watchdog-entry was found',
-      'description' => strip_tags(t($row->message,unserialize($row->variables))),
+      'description' => strip_tags(t($row->message, $vars)),
       'value' => $row->timestamp,
       'type' => $severity_type_mapping[$row->severity],
       'value_type' => 'timestamp',
