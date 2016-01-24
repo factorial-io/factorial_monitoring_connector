@@ -41,7 +41,7 @@ function factorial_monitoring_connector_collect_watchdog() {
 
   $query = db_query('select * from watchdog where timestamp >= :ts and severity in (:severities) order by timestamp desc', array(
     ':ts' => $last_timestamp,
-    ':severities' => array(WATCHDOG_ALERT, WATCHDOG_ERROR, WATCHDOG_CRITICAL, WATCHDOG_EMERGENCY)
+    ':severities' => array(WATCHDOG_ALERT, WATCHDOG_ERROR, WATCHDOG_CRITICAL, WATCHDOG_EMERGENCY, WATCHDOG_WARNING)
   ));
 
   foreach($query as $row) {
@@ -51,7 +51,7 @@ function factorial_monitoring_connector_collect_watchdog() {
       'name' => 'A critical watchdog-entry was found',
       'description' => strip_tags(t($row->message,unserialize($row->variables))),
       'value' => $row->timestamp,
-      'type' => 'error',
+      'type' => $severity_type_mapping[$row->severity],
       'value_type' => 'timestamp',
     );
   }
