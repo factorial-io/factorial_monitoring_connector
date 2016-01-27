@@ -41,7 +41,7 @@ function factorial_monitoring_connector_collect_watchdog() {
 
   $query = db_query('select * from watchdog where timestamp >= :ts and severity in (:severities) order by timestamp desc', array(
     ':ts' => $last_timestamp,
-    ':severities' => array(WATCHDOG_ALERT, WATCHDOG_ERROR, WATCHDOG_CRITICAL, WATCHDOG_EMERGENCY, WATCHDOG_WARNING)
+    ':severities' => array(WATCHDOG_ALERT, WATCHDOG_ERROR, WATCHDOG_CRITICAL, WATCHDOG_EMERGENCY)
   ));
   foreach($query as $row) {
     $vars = unserialize($row->variables);
