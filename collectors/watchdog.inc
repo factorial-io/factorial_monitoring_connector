@@ -56,7 +56,7 @@ function factorial_monitoring_connector_collect_watchdog() {
   foreach($culmulated as $key => $count) {
     $result[] = array(
       'key' => 'severity-culmulated-count-' . $key,
-      'group' => 'watchdog culmulated',
+      'group' => 'watchdog-culmulated',
       'name' => 'Num culmulated entries of severity \''. $key . '\'',
       'value_type' => 'integer',
       'value' => $count,
