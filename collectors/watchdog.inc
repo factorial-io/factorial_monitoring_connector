@@ -21,16 +21,30 @@ function factorial_monitoring_connector_collect_watchdog() {
     WATCHDOG_INFO => 'status',
     WATCHDOG_DEBUG => 'status'
   );
+
+  $severity_key_mapping = array(
+    WATCHDOG_EMERGENCY => 'emergency',
+    WATCHDOG_ALERT => 'alert',
+    WATCHDOG_CRITICAL => 'critical',
+    WATCHDOG_ERROR => 'error',
+    WATCHDOG_WARNING => 'warning',
+    WATCHDOG_NOTICE => 'notice',
+    WATCHDOG_INFO => 'info',
+    WATCHDOG_DEBUG => 'debug'
+  );
+
   $count = db_query('select count(severity) as count, severity from watchdog where timestamp >= :ts group by severity', array(':ts' => $last_timestamp));
   $levels = watchdog_severity_levels();
   $result = array();
   $temp = array();
+  $culmulated = array('error' => 0, 'warning' => 0, 'status' => 0);
   foreach ($count as $row) {
     $temp[$row->severity] = $row->count;
+    $culmulated[$severity_type_mapping[$row->severity]] += $row->count;
   }
   foreach($levels as $severity => $desc) {
     $result[] = array(
-      'key' => 'severity-count-' . $severity,
+      'key' => 'severity-count-' . $severity_key_mapping[$severity],
       'group' => 'watchdog',
       'name' => 'Num entries of severity \''. $desc . '\'',
       'value_type' => 'integer',
@@ -38,6 +52,18 @@ function factorial_monitoring_connector_collect_watchdog() {
       'type' => isset($temp[$severity]) ? $severity_type_mapping[$severity] : 'status'
     );
   }
+
+  foreach($culmulated as $key => $count) {
+    $result[] = array(
+      'key' => 'severity-culmulated-count-' . $key,
+      'group' => 'watchdog culmulated',
+      'name' => 'Num culmulated entries of severity \''. $key . '\'',
+      'value_type' => 'integer',
+      'value' => $count,
+      'type' => 'status'
+    );
+  }
+
 
   $query = db_query('select * from watchdog where timestamp >= :ts and severity in (:severities) order by timestamp desc', array(
     ':ts' => $last_timestamp,
