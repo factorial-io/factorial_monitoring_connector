@@ -33,7 +33,7 @@ function factorial_monitoring_connector_collect_watchdog() {
     WATCHDOG_DEBUG => 'debug'
   );
 
-  $count = db_query('select count(severity) as count, severity from watchdog where timestamp >= :ts group by severity', array(':ts' => $last_timestamp));
+  $count = db_query('select count(severity) as count, severity from {watchdog} where timestamp >= :ts group by severity', array(':ts' => $last_timestamp));
   $levels = watchdog_severity_levels();
   $result = array();
   $temp = array();
@@ -64,30 +64,18 @@ function factorial_monitoring_connector_collect_watchdog() {
     );
   }
 
+  $count = db_query('select count(severity) as count, type, severity from watchdog where timestamp >= :ts group by type, severity', array(':ts' => $last_timestamp));
 
-  $query = db_query('select * from watchdog where timestamp >= :ts and severity in (:severities) order by timestamp desc', array(
-    ':ts' => $last_timestamp,
-    ':severities' => array(WATCHDOG_ALERT, WATCHDOG_ERROR, WATCHDOG_CRITICAL, WATCHDOG_EMERGENCY)
-  ));
-  foreach($query as $row) {
-    $vars = unserialize($row->variables);
-    if (!is_array($vars)) {
-      $vars = array();
-    }
-
+  foreach ($count as $row) {
     $result[] = array(
-      'key' => 'watchdog-error-' . $row->wid,
-      'group' => 'watchdog-errors',
-      'name' => 'A critical watchdog-entry was found',
-      'description' => strip_tags(t($row->message, $vars)),
-      'value' => $row->timestamp,
-      'type' => $severity_type_mapping[$row->severity],
-      'value_type' => 'timestamp',
+      'key' => 'severity-count-' . drupal_clean_css_identifier($row->type) . '-' . $severity_key_mapping[$row->severity],
+      'group' => 'watchdog-detailed',
+      'name' => 'Num entries of severity \''. $severity_key_mapping[$row->severity] . '\' and type \'' . $row->type . '\'',
+      'value_type' => 'integer',
+      'value' => $row->count,
+      'type' => $severity_type_mapping[$row->severity]
     );
   }
-
-  return $result;
-
 }
 
 
