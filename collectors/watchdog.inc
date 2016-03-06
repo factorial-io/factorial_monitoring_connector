@@ -21,16 +21,30 @@ function factorial_monitoring_connector_collect_watchdog() {
     WATCHDOG_INFO => 'status',
     WATCHDOG_DEBUG => 'status'
   );
-  $count = db_query('select count(severity) as count, severity from watchdog where timestamp >= :ts group by severity', array(':ts' => $last_timestamp));
+
+  $severity_key_mapping = array(
+    WATCHDOG_EMERGENCY => 'emergency',
+    WATCHDOG_ALERT => 'alert',
+    WATCHDOG_CRITICAL => 'critical',
+    WATCHDOG_ERROR => 'error',
+    WATCHDOG_WARNING => 'warning',
+    WATCHDOG_NOTICE => 'notice',
+    WATCHDOG_INFO => 'info',
+    WATCHDOG_DEBUG => 'debug'
+  );
+
+  $count = db_query('select count(severity) as count, severity from {watchdog} where timestamp >= :ts group by severity', array(':ts' => $last_timestamp));
   $levels = watchdog_severity_levels();
   $result = array();
   $temp = array();
+  $culmulated = array('error' => 0, 'warning' => 0, 'status' => 0);
   foreach ($count as $row) {
     $temp[$row->severity] = $row->count;
+    $culmulated[$severity_type_mapping[$row->severity]] += $row->count;
   }
   foreach($levels as $severity => $desc) {
     $result[] = array(
-      'key' => 'severity-count-' . $severity,
+      'key' => 'severity-count-' . $severity_key_mapping[$severity],
       'group' => 'watchdog',
       'name' => 'Num entries of severity \''. $desc . '\'',
       'value_type' => 'integer',
@@ -39,25 +53,29 @@ function factorial_monitoring_connector_collect_watchdog() {
     );
   }
 
-  $query = db_query('select * from watchdog where timestamp >= :ts and severity in (:severities) order by timestamp desc', array(
-    ':ts' => $last_timestamp,
-    ':severities' => array(WATCHDOG_ALERT, WATCHDOG_ERROR, WATCHDOG_CRITICAL, WATCHDOG_EMERGENCY)
-  ));
-
-  foreach($query as $row) {
+  foreach($culmulated as $key => $count) {
     $result[] = array(
-      'key' => 'watchdog-error-' . $row->wid,
-      'group' => 'watchdog-errors',
-      'name' => 'A critical watchdog-entry was found',
-      'description' => strip_tags(t($row->message,unserialize($row->variables))),
-      'value' => $row->timestamp,
-      'type' => 'error',
-      'value_type' => 'timestamp',
+      'key' => 'severity-culmulated-count-' . $key,
+      'group' => 'watchdog-culmulated',
+      'name' => 'Num culmulated entries of severity \''. $key . '\'',
+      'value_type' => 'integer',
+      'value' => $count,
+      'type' => 'status'
     );
   }
 
-  return $result;
+  $count = db_query('select count(severity) as count, type, severity from watchdog where timestamp >= :ts group by type, severity', array(':ts' => $last_timestamp));
 
+  foreach ($count as $row) {
+    $result[] = array(
+      'key' => 'severity-count-' . drupal_clean_css_identifier($row->type) . '-' . $severity_key_mapping[$row->severity],
+      'group' => 'watchdog-detailed',
+      'name' => 'Num entries of severity \''. $severity_key_mapping[$row->severity] . '\' and type \'' . $row->type . '\'',
+      'value_type' => 'integer',
+      'value' => $row->count,
+      'type' => $severity_type_mapping[$row->severity]
+    );
+  }
 }
 
 
