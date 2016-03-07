@@ -76,6 +76,8 @@ function factorial_monitoring_connector_collect_watchdog() {
       'type' => $severity_type_mapping[$row->severity]
     );
   }
+
+  return $result;
 }
 
 
