@@ -73,7 +73,7 @@ function factorial_monitoring_connector_collect_watchdog() {
       'name' => 'Num entries of severity \''. $severity_key_mapping[$row->severity] . '\' and type \'' . $row->type . '\'',
       'value_type' => 'integer',
       'value' => $row->count,
-      'type' => $severity_type_mapping[$row->severity]
+      'type' => 'status'
     );
   }
 
