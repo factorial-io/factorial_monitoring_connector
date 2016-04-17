@@ -19,7 +19,7 @@ function factorial_monitoring_connector_collect_watchdog() {
     WATCHDOG_WARNING => 'warning',
     WATCHDOG_NOTICE => 'status',
     WATCHDOG_INFO => 'status',
-    WATCHDOG_DEBUG => 'status'
+    WATCHDOG_DEBUG => 'status',
   );
 
   $severity_key_mapping = array(
@@ -30,7 +30,7 @@ function factorial_monitoring_connector_collect_watchdog() {
     WATCHDOG_WARNING => 'warning',
     WATCHDOG_NOTICE => 'notice',
     WATCHDOG_INFO => 'info',
-    WATCHDOG_DEBUG => 'debug'
+    WATCHDOG_DEBUG => 'debug',
   );
 
   $count = db_query('select count(severity) as count, severity from {watchdog} where timestamp >= :ts group by severity', array(':ts' => $last_timestamp));
@@ -42,25 +42,25 @@ function factorial_monitoring_connector_collect_watchdog() {
     $temp[$row->severity] = $row->count;
     $culmulated[$severity_type_mapping[$row->severity]] += $row->count;
   }
-  foreach($levels as $severity => $desc) {
+  foreach ($levels as $severity => $desc) {
     $result[] = array(
       'key' => 'severity-count-' . $severity_key_mapping[$severity],
       'group' => 'watchdog',
-      'name' => 'Num entries of severity \''. $desc . '\'',
+      'name' => 'Num entries of severity \'' . $desc . '\'',
       'value_type' => 'integer',
       'value' => isset($temp[$severity]) ? $temp[$severity] : 0,
-      'type' => isset($temp[$severity]) ? $severity_type_mapping[$severity] : 'status'
+      'type' => isset($temp[$severity]) ? $severity_type_mapping[$severity] : 'status',
     );
   }
 
-  foreach($culmulated as $key => $count) {
+  foreach ($culmulated as $key => $count) {
     $result[] = array(
       'key' => 'severity-culmulated-count-' . $key,
       'group' => 'watchdog-culmulated',
-      'name' => 'Num culmulated entries of severity \''. $key . '\'',
+      'name' => 'Num culmulated entries of severity \'' . $key . '\'',
       'value_type' => 'integer',
       'value' => $count,
-      'type' => 'status'
+      'type' => 'status',
     );
   }
 
@@ -70,14 +70,12 @@ function factorial_monitoring_connector_collect_watchdog() {
     $result[] = array(
       'key' => 'severity-count-' . drupal_clean_css_identifier($row->type) . '-' . $severity_key_mapping[$row->severity],
       'group' => 'watchdog-detailed',
-      'name' => 'Num entries of severity \''. $severity_key_mapping[$row->severity] . '\' and type \'' . $row->type . '\'',
+      'name' => 'Num entries of severity \'' . $severity_key_mapping[$row->severity] . '\' and type \'' . $row->type . '\'',
       'value_type' => 'integer',
       'value' => $row->count,
-      'type' => 'status'
+      'type' => 'status',
     );
   }
 
   return $result;
 }
-
-
