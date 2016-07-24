@@ -1,0 +1,7 @@
+services:
+  plugin.manager.factorial_monitoring_connector.collectorplugins:
+    class: Drupal\factorial_monitoring_connector\MonitoringCollectorManager
+    parent: default_plugin_manager
+  plugin.manager.core_version_collector_plugin.processor:
+    class: Drupal\factorial_monitoring_connector\Plugin\CoreVersionCollectorPluginManager
+    parent: default_plugin_manager

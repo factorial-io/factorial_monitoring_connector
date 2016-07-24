@@ -1,6 +1,14 @@
 {
   "name": "factorial-io/factorial_monitoring_connector",
-  "description": "A small drupal module to collect various system information and provide them as JSON on request",
   "type": "drupal-module",
-  "license": "GPL-2.0+"
+  "description": "Connects the drupal installation to the factorial monitoring system",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://github.com/factorial-io/factorial_monitoring_connector",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://github.com/factorial-io/factorial_monitoring_connector/issues",
+    "source": "https://github.com/factorial-io/factorial_monitoring_connector"
+  },
+  "require": { }
 }

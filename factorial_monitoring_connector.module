@@ -1,161 +1,24 @@
 <?php
+
 /**
  * @file
- * All public methods/hooks to provide a connector to the factorial monitoring service.
+ * Contains factorial_monitoring_connector.module..
  */
 
-define('FMC_CACHE_LIFETIME', -1);
+use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_help().
  */
-function factorial_monitoring_connector_menu() {
-  return array(
-    'admin/monitor-state' => array(
-      'page callback' => 'factorial_monitoring_connector_get_results',
-      'access callback' => 'factorial_monitoring_connector_access_callback',
-      'type' => MENU_CALLBACK,
-    ),
-  );
-}
+function factorial_monitoring_connector_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the factorial_monitoring_connector module.
+    case 'help.page.factorial_monitoring_connector':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Connects the drupal installation to the factorial monitoring system') . '</p>';
+      return $output;
 
-/**
- * Menu access callback.
- */
-function factorial_monitoring_connector_access_callback() {
-  return TRUE;
-}
-
-/**
- * Get the client version.
- */
-function factorial_monitoring_connector_get_client_version() {
-  return '1.1.0';
-}
-
-/**
- * Private implementation to get results.
- */
-function _factorial_monitoring_connector_get_results() {
-
-  $cache_key = 'factorial_monitoring_connector_results';
-  if ((FMC_CACHE_LIFETIME > 0) && ($data = cache_get($cache_key))) {
-    if ($data->expire >= time()) {
-      return $data->data;
-    }
-  }
-
-  $results = module_invoke_all('factorial_monitoring_collect_values');
-
-  drupal_alter('factorial_monitoring_collect_values', $results);
-
-  $return = array(
-    'results' => $results,
-    'version' => factorial_monitoring_connector_get_client_version(),
-    'ts' => time(),
-  );
-
-  if (FMC_CACHE_LIFETIME > 0) {
-    cache_set($cache_key, $return, 'cache', time() + FMC_CACHE_LIFETIME);
-  }
-
-  return $return;
-}
-
-
-/**
- * Implements the page callback. Collect all results and return them as JSON.
- */
-function factorial_monitoring_connector_get_results() {
-  $return = _factorial_monitoring_connector_get_results();
-
-  // Disable caching.
-  drupal_page_is_cacheable(FALSE);
-
-  $return = factorial_monitoring_connector_encrypt($return);
-
-  // Create response.
-  $json = json_encode($return);
-  drupal_add_http_header('Content-Type', 'application/json; charset=utf-8');
-  print $json;
-  drupal_exit();
-}
-
-function factorial_monitoring_connector_encrypt($data) {
-  if (!extension_loaded('mcrypt')) {
-    $data['encryptionNotSupported'] = TRUE;
-    return $data;
-  }
-
-  $to_encrypt = json_encode($data['results']);
-  $cipher = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_CBC, '');
-
-  /*
-  for 256 bit AES encryption key size should be of 32 bytes (256 bits)
-  for 128 bit AES encryption key size should be of 16 bytes (128 bits)
-  here i am doing 256-bit AES encryption
-  choose a strong key
-  */
-  $key256 = variable_get('factorial_monitoring_connector_key', '12345678901234561234567890123456');
-
-  /*
-  for 128 bit Rijndael encryption, initialization vector (iv) size should be 16 bytes
-  for 256 bit Rijndael encryption, initialization vector (iv) size should be 32 bytes
-  here I have chosen 128 bit Rijndael encyrption, so $iv size is 16 bytes
-  */
-  $iv = variable_get('factorial_monitoring_connector_iv', '1234567890123456');
-  mcrypt_generic_init($cipher, $key256, $iv);
-  // PHP pads with NULL bytes if $plainText is not a multiple of the block size
-  $cipherText256 = mcrypt_generic($cipher, $to_encrypt);
-  mcrypt_generic_deinit($cipher);
-  /*
-  $cipherHexText256 stores encrypted text in hex
-  we will be decrypting data stored in $cipherHexText256 from node js
-  */
-  $cipherHexText256 =bin2hex($cipherText256);
-
-  $data['results'] = $cipherHexText256;
-  $data['encrypted'] = TRUE;
-  return $data;
-}
-
-/**
- * Implementation of hook_factorial_monitoring_collect_values().
- */
-function factorial_monitoring_connector_factorial_monitoring_collect_values() {
-  $result = array();
-
-  $base_path = drupal_get_path('module', 'factorial_monitoring_connector') . '/collectors';
-  $dir = scandir($base_path);
-
-  foreach ($dir as $file) {
-    $parts = pathinfo($file);
-    if (($file[0] == '.') || ($parts['extension'] != 'inc')) {
-      continue;
-    }
-
-    require_once $base_path . '/' . $file;
-    $callback = 'factorial_monitoring_connector_collect_' . $parts['filename'];
-    $query = $callback();
-
-    if (!empty($query)) {
-      if (isset($query['value'])) {
-        $query = array($query);
-      }
-      $result = array_merge($result, $query);
-    }
-  }
-
-  return $result;
-}
-
-
-/**
- * Implementation of hook_menu_site_status_alter().
- */
- function factorial_monitoring_connector_menu_site_status_alter(&$menu_site_status, $path) {
-  // Allow access to admin/monitor-state even if site is in offline mode.
-  if ($menu_site_status == MENU_SITE_OFFLINE && user_is_anonymous() && $path == 'admin/monitor-state') {
-    $menu_site_status = MENU_SITE_ONLINE;
+    default:
   }
 }

@@ -1,0 +1,8 @@
+
+factorial_monitoring_connector.monitor_state_controller_collectCurrentState:
+  path: 'admin/monitor-state'
+  defaults:
+    _controller: '\Drupal\factorial_monitoring_connector\Controller\MonitorStateController::collectCurrentState'
+    _title: 'Collect current state'
+  requirements:
+    _permission: 'access content'

@@ -1,4 +1,0 @@
-name = Factorial Monitoring Connector
-description = Provides a connector to the factorial monitoring service.
-core = 7.x
-package = Other
