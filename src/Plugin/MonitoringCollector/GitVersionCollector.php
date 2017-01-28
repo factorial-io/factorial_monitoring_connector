@@ -1,11 +1,10 @@
 <?php
 
-
 namespace Drupal\factorial_monitoring_connector\Plugin\MonitoringCollector;
-
 
 use Drupal\factorial_monitoring_connector\MonitoringCollectorPluginBase;
 use Drupal\factorial_monitoring_connector\MonitoringCollectorPluginInterface;
+
 /**
  * Git version collector.
  *
@@ -19,7 +18,7 @@ class GitVersionCollector extends MonitoringCollectorPluginBase implements Monit
   /**
    * Collects data.
    *
-   * @return array().
+   * @return array
    *   Collected data.
    */
   public function collect() {
@@ -64,4 +63,5 @@ class GitVersionCollector extends MonitoringCollectorPluginBase implements Monit
       ),
     );
   }
+
 }

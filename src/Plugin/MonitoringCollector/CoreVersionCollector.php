@@ -1,11 +1,10 @@
 <?php
 
-
 namespace Drupal\factorial_monitoring_connector\Plugin\MonitoringCollector;
-
 
 use Drupal\factorial_monitoring_connector\MonitoringCollectorPluginBase;
 use Drupal\factorial_monitoring_connector\MonitoringCollectorPluginInterface;
+
 /**
  * Core version collector.
  *
@@ -19,7 +18,7 @@ class CoreVersionCollector extends MonitoringCollectorPluginBase implements Moni
   /**
    * Collects data.
    *
-   * @return array().
+   * @return array
    *   Collected data.
    */
   public function collect() {
@@ -30,7 +29,8 @@ class CoreVersionCollector extends MonitoringCollectorPluginBase implements Moni
         'name' => 'Drupal version',
         'value_type' => 'string',
         'value' => \Drupal::VERSION,
-      )
+      ),
     );
   }
+
 }
