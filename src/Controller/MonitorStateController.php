@@ -87,7 +87,7 @@ class MonitorStateController extends ControllerBase {
     here i am doing 256-bit AES encryption
     choose a strong key
      */
-    $key256 = $config->get('key');
+    $key256 = $config->get('key256');
     if (empty($key)) {
       $key256 = '12345678901234561234567890123456';
     }
