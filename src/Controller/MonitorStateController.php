@@ -72,7 +72,7 @@ class MonitorStateController extends ControllerBase {
    *   The encrypted data.
    */
   private function encrypt(array $data) {
-    if (1 || !extension_loaded('mcrypt')) {
+    if (!extension_loaded('mcrypt')) {
       $data['encryptionNotSupported'] = TRUE;
       return $data;
     }
@@ -88,12 +88,18 @@ class MonitorStateController extends ControllerBase {
     choose a strong key
      */
     $key256 = $config->get('key');
+    if (empty($key)) {
+      $key256 = '12345678901234561234567890123456';
+    }
     /*
     for 128 bit Rijndael encryption, initialization vector (iv) size should be 16 bytes
     for 256 bit Rijndael encryption, initialization vector (iv) size should be 32 bytes
     here I have chosen 128 bit Rijndael encyrption, so $iv size is 16 bytes
      */
     $iv = $config->get('iv');
+    if (empty($iv)) {
+      $iv = '1234567890123456';
+    }
 
     mcrypt_generic_init($cipher, $key256, $iv);
     // PHP pads with NULL bytes if $plainText is not a multiple of the block size.
