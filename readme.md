@@ -11,16 +11,16 @@ the factorial_monitoring_connector is a small module to collect various informat
 
 * add this repository as a submodule via 
 
-      git submodule add https://github.com/factorial-io/factorial_monitoring_connector.git sites/all/modules/custom/factorial_monitoring_connector
+        git submodule add https://github.com/factorial-io/factorial_monitoring_connector.git sites/all/modules/custom/factorial_monitoring_connector
 
 ## installation via composer
 
 * Add the following lines to your `repositories`-section:
 
-      {
-        "type": "vcs",
-        "url": "https://github.com/factorial-io/factorial_monitoring_connector.git"
-      }
+        {
+          "type": "vcs",
+          "url": "https://github.com/factorial-io/factorial_monitoring_connector.git"
+        }
 
 
 * run `composer require factorial-io/factorial_monitoring_connector:dev-8.x-1.x`
