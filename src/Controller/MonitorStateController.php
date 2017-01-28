@@ -27,7 +27,7 @@ class MonitorStateController extends ControllerBase {
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request.
    *
-   * @return \Symfony\Component\HttpFoundation\JsonResponse Return the results.
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   Return the results.
    */
   public function collectCurrentState(Request $request) {
@@ -86,23 +86,23 @@ class MonitorStateController extends ControllerBase {
     for 128 bit AES encryption key size should be of 16 bytes (128 bits)
     here i am doing 256-bit AES encryption
     choose a strong key
-    */
+     */
     $key256 = $config->get('key');
     /*
     for 128 bit Rijndael encryption, initialization vector (iv) size should be 16 bytes
     for 256 bit Rijndael encryption, initialization vector (iv) size should be 32 bytes
     here I have chosen 128 bit Rijndael encyrption, so $iv size is 16 bytes
-    */
+     */
     $iv = $config->get('iv');
 
     mcrypt_generic_init($cipher, $key256, $iv);
-    // PHP pads with NULL bytes if $plainText is not a multiple of the block size
+    // PHP pads with NULL bytes if $plainText is not a multiple of the block size.
     $cipherText256 = mcrypt_generic($cipher, $to_encrypt);
     mcrypt_generic_deinit($cipher);
     /*
     $cipherHexText256 stores encrypted text in hex
     we will be decrypting data stored in $cipherHexText256 from node js
-    */
+     */
     $cipherHexText256 = bin2hex($cipherText256);
 
     $data['results'] = $cipherHexText256;
