@@ -88,7 +88,7 @@ class MonitorStateController extends ControllerBase {
     choose a strong key
      */
     $key256 = $config->get('key256');
-    if (empty($key)) {
+    if (empty($key256)) {
       $key256 = '12345678901234561234567890123456';
     }
     /*
