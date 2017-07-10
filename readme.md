@@ -1,14 +1,24 @@
 # readme
 
-the factorial_monitoring_connector is a small module to collect various informations about hte installation on request.
+the factorial_monitoring_connector is a small module to collect various informations about the installation on request.
 
-## installation
+## installation the old fashioened way
 
-add this repository as a submodule via 
+* download the repository
+* put it in your modules-folder
 
-    git submodule add https://github.com/factorial-io/factorial_monitoring_connector.git sites/all/modules/custom/factorial_monitoring_connector
+## installation as git submodule (deprecated)
 
-Enable the module as usual.
+* add this repository as a submodule via 
 
-Add the host to you monitoring configuration.
+        git submodule add https://github.com/factorial-io/factorial_monitoring_connector.git sites/all/modules/custom/factorial_monitoring_connector
 
+## installation via composer
+
+* run `composer require factorial-io/factorial_monitoring_connector:dev-8.x-1.x`
+
+## Setup
+
+* Enable the module as usual.
+* Add the host to you monitoring configuration.
+* As the module has no settings-form (yet), please export your configuration, add the file according to your needs. Re-import your configuration again.
