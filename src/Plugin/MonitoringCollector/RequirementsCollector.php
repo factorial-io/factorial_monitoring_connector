@@ -2,6 +2,8 @@
 
 namespace Drupal\factorial_monitoring_connector\Plugin\MonitoringCollector;
 
+use Drupal\Core\Render\Markup;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\factorial_monitoring_connector\MonitoringCollectorPluginBase;
 use Drupal\factorial_monitoring_connector\MonitoringCollectorPluginInterface;
 use \Drupal\Component\Utility\Html;
@@ -42,8 +44,11 @@ class RequirementsCollector extends MonitoringCollectorPluginBase implements Mon
         // a render array. TODO: Use more robust code.
         if (isset($requirement['description'])) {
           $r = $requirement['description'];
-          if (is_object($r)) {
+          if (is_object($r) && ($r instanceof TranslatableMarkup)) {
             $description = $r->render();
+          }
+          else if ((is_object($r)) && ($r instanceof Markup)) {
+            $description = (string) $r;
           }
           else {
             $description = drupal_render($r);
