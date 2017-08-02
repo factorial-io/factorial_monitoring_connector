@@ -49,7 +49,16 @@ class MonitorStateController extends ControllerBase {
     $service = \Drupal::service('plugin.manager.factorial_monitoring_connector.collectorplugins');
     foreach ($service->getDefinitions() as $definition) {
       $plugin = $service->createInstance($definition['id']);
+      $starttick = microtime(TRUE);
       $results = array_merge($results, $plugin->collect());
+      $delta = microtime(TRUE) - $starttick;
+      $results[] = array(
+        'group' => 'timing',
+        'key' => 'monitor-' . $definition['id'],
+        'value' => round($delta * 10000) / 10.0,
+        'value_type' => 'integer',
+        'name' => $definition['id'],
+      );
     }
 
     $return = array(
