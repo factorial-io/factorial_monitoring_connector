@@ -27,9 +27,12 @@ class UserCollector extends MonitoringCollectorPluginBase implements MonitoringC
 
     $connection = Database::getConnection('default');
 
-    $flood_count = $connection
-      ->query("SELECT COUNT(fid) FROM {flood} f WHERE f.timestamp > :timestamp", array(":timestamp" => $interval))
-      ->fetchField();
+    $flood_count = 0;
+    if ($connection->schema()->tableExists('flood')) {
+      $flood_count = $connection
+        ->query("SELECT COUNT(fid) FROM {flood} f WHERE f.timestamp > :timestamp", [":timestamp" => $interval])
+        ->fetchField();
+    }
 
     $user_count = \Drupal::entityQuery('user')
       ->count()
