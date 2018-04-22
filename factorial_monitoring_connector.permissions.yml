@@ -1,0 +1,4 @@
+access factorial monitoring:
+  title: 'Access factorial monitoring'
+  description: 'Access factorial monitoring'
+  restrict access: TRUE

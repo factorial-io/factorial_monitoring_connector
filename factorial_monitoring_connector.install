@@ -1,0 +1,31 @@
+<?php
+
+use Drupal\user\Entity\Role;
+use Drupal\user\RoleInterface;
+
+
+/**
+ * Helper function to setup permissions.
+ */
+function _factorial_monitoring_connector_set_permissions() {
+  $roles = Role::loadMultiple([
+    RoleInterface::ANONYMOUS_ID,
+  ]);
+
+  $roles[RoleInterface::ANONYMOUS_ID]->grantPermission('access factorial monitoring');
+  $roles[RoleInterface::ANONYMOUS_ID]->save();
+}
+
+/**
+ * Implements hook_enable().
+ */
+function factorial_monitoring_connector_enable() {
+  _factorial_monitoring_connector_set_permissions();
+}
+
+/**
+ * Update permission.
+ */
+function factorial_monitoring_connector_update_8001() {
+  _factorial_monitoring_connector_set_permissions();
+}
