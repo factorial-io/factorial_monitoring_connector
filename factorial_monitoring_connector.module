@@ -72,7 +72,7 @@ function factorial_monitoring_connector_get_results() {
   // Disable caching.
   drupal_page_is_cacheable(FALSE);
 
-  //$return = factorial_monitoring_connector_encrypt($return);
+  $return = factorial_monitoring_connector_encrypt($return);
 
   // Create response.
   $json = json_encode($return);
