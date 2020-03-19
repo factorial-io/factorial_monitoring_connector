@@ -2,7 +2,7 @@
 
 namespace Drupal\factorial_monitoring_connector\Controller;
 
-require __DIR__ . '/../../vendor/autoload.php';
+//require __DIR__ . '/../../vendor/autoload.php';
 
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\HttpFoundation\JsonResponse;
