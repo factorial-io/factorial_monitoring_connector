@@ -94,7 +94,7 @@ function factorial_monitoring_connector_get_results() {
  */
 function factorial_monitoring_connector_encrypt($data) {
 
-    require_once __DIR__ . '/vendor/autoload.php';
+    require_once 'include/defuse-crypto.phar';
 
     if (!class_exists(\Defuse\Crypto\Key::class)) {
         $data['encryptionNotSupported'] = TRUE;
