@@ -51,7 +51,7 @@ class RequirementsCollector extends MonitoringCollectorPluginBase implements Mon
             $description = (string) $r;
           }
           else {
-            $description = drupal_render($r);
+            \Drupal::service('renderer')->render($r, FALSE);
           }
         }
         $return[] = array(
