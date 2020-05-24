@@ -51,7 +51,7 @@ class RequirementsCollector extends MonitoringCollectorPluginBase implements Mon
             $description = (string) $r;
           }
           else {
-            \Drupal::service('renderer')->render($r, FALSE);
+            $description = \Drupal::service('renderer')->render($r);
           }
         }
         $return[] = array(

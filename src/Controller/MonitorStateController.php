@@ -2,9 +2,14 @@
 
 namespace Drupal\factorial_monitoring_connector\Controller;
 
+//require __DIR__ . '/../../vendor/autoload.php';
+
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Defuse\Crypto\Crypto;
+use Defuse\Crypto\Key;
+use Defuse\Crypto\Exception as Ex;
 
 /**
  * Class MonitorStateController.
@@ -29,6 +34,8 @@ class MonitorStateController extends ControllerBase {
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   Return the results.
+   *
+   * @throws Ex\CryptoException
    */
   public function collectCurrentState(Request $request) {
 
@@ -79,50 +86,37 @@ class MonitorStateController extends ControllerBase {
    *
    * @return array
    *   The encrypted data.
+   *
+   * @throws Ex\CryptoException
    */
   private function encrypt(array $data) {
-    if (!extension_loaded('mcrypt')) {
-      $data['encryptionNotSupported'] = TRUE;
-      return $data;
-    }
 
-    $to_encrypt = json_encode($data['results']);
-    $cipher = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_CBC, '');
-    $config = $this->config('factorial_monitoring_connector.settings');
-
-    /*
-    for 256 bit AES encryption key size should be of 32 bytes (256 bits)
-    for 128 bit AES encryption key size should be of 16 bytes (128 bits)
-    here i am doing 256-bit AES encryption
-    choose a strong key
-     */
-    $key256 = $config->get('key256');
-    if (empty($key256)) {
-      $key256 = '12345678901234561234567890123456';
-    }
-    /*
-    for 128 bit Rijndael encryption, initialization vector (iv) size should be 16 bytes
-    for 256 bit Rijndael encryption, initialization vector (iv) size should be 32 bytes
-    here I have chosen 128 bit Rijndael encyrption, so $iv size is 16 bytes
-     */
-    $iv = $config->get('iv');
-    if (empty($iv)) {
-      $iv = '1234567890123456';
-    }
-
-    mcrypt_generic_init($cipher, $key256, $iv);
-    // PHP pads with NULL bytes if $plainText is not a multiple of the block size.
-    $cipherText256 = mcrypt_generic($cipher, $to_encrypt);
-    mcrypt_generic_deinit($cipher);
-    /*
-    $cipherHexText256 stores encrypted text in hex
-    we will be decrypting data stored in $cipherHexText256 from node js
-     */
-    $cipherHexText256 = bin2hex($cipherText256);
-
-    $data['results'] = $cipherHexText256;
-    $data['encrypted'] = TRUE;
-    return $data;
-  }
+        if (!class_exists(Key::class)) {
+            $data['encryptionNotSupported'] = TRUE;
+            return $data;
+        }
+        try {
+            $config = $this->config('factorial_monitoring_connector.settings');
+            $key = $config->get('key');
+            if (empty($key)) {
+                $key = 'def0000017265d5ce1429e6987748d0ab48b35dade5626b04ec1dc4d724f8963192f90309327603758736a64c632a33aa90135f0b6d08e6bbee90063ff45ca9acdabf1ba';
+            }
+            //Load key into a Key object using Key's loadFromAsciiSafeString static method.
+            $key = Key::loadFromAsciiSafeString($key);
+            //Return the JSON representation of the data.
+            $to_encrypt = json_encode($data['results']);
+            //Encrypt the data with the Key, using defuse/php-encryption
+            $cipherText = Crypto::encrypt($to_encrypt, $key);
+            $data['results'] = $cipherText;
+            $data['encrypted'] = TRUE;
+        }
+        catch (Ex\EnvironmentIsBrokenException $e) {
+            throw new Ex\CryptoException($e->getMessage(), $e->getCode(), $e);
+        }
+        catch (Ex\BadFormatException $e) {
+            throw new Ex\CryptoException($e->getMessage(), $e->getCode(), $e);
+        }
+        return $data;
+   }
 
 }

@@ -10,5 +10,7 @@
     "issues": "https://github.com/factorial-io/factorial_monitoring_connector/issues",
     "source": "https://github.com/factorial-io/factorial_monitoring_connector"
   },
-  "require": { }
+  "require": {
+    "defuse/php-encryption": "dev-master"
+  }
 }
