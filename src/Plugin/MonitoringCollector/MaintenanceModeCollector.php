@@ -26,6 +26,7 @@ class MaintenanceModeCollector extends MonitoringCollectorPluginBase implements 
         $msg = $maintenance_mode ? \Drupal::state()->get('system.maintenance_mode_message',NULL) : NULL;
         return array(
             array(
+            'key' => 'maintenance-mode',
             'group' => 'core',
             'type' => $maintenance_mode ? 'error' : 'status',
             'name' => 'Maintenance mode',

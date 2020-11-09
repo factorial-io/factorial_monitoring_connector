@@ -24,6 +24,7 @@ class CoreVersionCollector extends MonitoringCollectorPluginBase implements Moni
   public function collect() {
     return array(
       array(
+        'key' => 'drupal-version',
         'group' => 'core',
         'type' => 'status',
         'name' => 'Drupal version',
