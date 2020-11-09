@@ -60,6 +60,7 @@ class UpdateStatusCollector extends MonitoringCollectorPluginBase implements Mon
 
             if (isset($mapping[$data['drupal']['status']])) {
                 $result = $mapping[$data['drupal']['status']];
+                $result['key'] = 'update-status-drupal';
                 $result['group'] = 'core';
                 $result['name'] = 'Update status';
                 $return[] = $result;
@@ -74,6 +75,7 @@ class UpdateStatusCollector extends MonitoringCollectorPluginBase implements Mon
                             $result = $return[$status];
                         }
 
+                        $result['key'] = 'update-status-module-' . $item['name'];
                         $result['group'] = 'contrib';
                         $result['name'] = 'Update status';
 

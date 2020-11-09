@@ -28,6 +28,7 @@ class LastCronCollector extends MonitoringCollectorPluginBase implements Monitor
 
         return array(
             array(
+            'key' => 'last-cron-run',
             'group' => 'core',
             'type' => $type,
             'name' => 'Last cron run',
