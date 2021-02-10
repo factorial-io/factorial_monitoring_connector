@@ -30,9 +30,8 @@ class UpdateStatusCollector extends MonitoringCollectorPluginBase implements Mon
             return;
         }
 
-        if ($available = update_get_available(FALSE)) {
+        if ($available = update_get_available(TRUE)) {
             $return = array();
-
             module_load_include('inc', 'update', 'update.compare');//??
             $data = update_calculate_project_data($available);
             $mapping = array(
