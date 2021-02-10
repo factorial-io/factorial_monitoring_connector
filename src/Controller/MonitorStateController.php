@@ -57,7 +57,12 @@ class MonitorStateController extends ControllerBase {
     foreach ($service->getDefinitions() as $definition) {
       $plugin = $service->createInstance($definition['id']);
       $starttick = microtime(TRUE);
-      $results = array_merge($results, $plugin->collect());
+      $collected = $plugin->collect();
+
+      if (is_array($collected)) {
+        $results = array_merge($results, $plugin->collect());
+      }
+
       $delta = microtime(TRUE) - $starttick;
       $results[] = array(
         'group' => 'timing',
@@ -89,7 +94,7 @@ class MonitorStateController extends ControllerBase {
    *
    * @throws Ex\CryptoException
    */
-  private function encrypt(array $data) {
+  protected function encrypt(array $data) {
 
         if (!class_exists(Key::class)) {
             $data['encryptionNotSupported'] = TRUE;
