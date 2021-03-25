@@ -15,7 +15,7 @@ the factorial_monitoring_connector is a small module to collect various informat
 
 ## installation via composer
 
-* run `composer require factorial-io/factorial_monitoring_connector:dev-8.x-1.x`
+* run `composer require factorial-io/factorial_monitoring_connector:dev-8.x-2.x`
 
 ## Setup
 
