@@ -32,7 +32,8 @@ class UpdateStatusCollector extends MonitoringCollectorPluginBase implements Mon
 
         if ($available = update_get_available(TRUE)) {
             $return = array();
-            module_load_include('inc', 'update', 'update.compare');//??
+            // ModuleHandler::loadInclude() doesn't include code from uninstalled extensions.
+            \Drupal::moduleHandler()->loadInclude('update', 'inc', 'update.compare');
             $data = update_calculate_project_data($available);
             $mapping = array(
                 UpdateManagerInterface::NOT_SECURE => array(

@@ -35,10 +35,12 @@ class UserCollector extends MonitoringCollectorPluginBase implements MonitoringC
     }
 
     $user_count = \Drupal::entityQuery('user')
+      ->accessCheck(FALSE)
       ->count()
       ->execute();
 
     $blocked_count = \Drupal::entityQuery('user')#
+      ->accessCheck(FALSE)
       ->condition('status', 0)
       ->count()
       ->execute();
